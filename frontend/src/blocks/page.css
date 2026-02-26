@@ -1,0 +1,10 @@
+.page {
+  font-family: "Inter",sans-serif;
+  color: var(--primary-color);
+
+  margin: 0 auto;
+}
+
+body {
+  background-color: #000000;
+}

@@ -1,0 +1,122 @@
+.profile {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.profile__container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.profile__info {
+  display: grid;
+  grid-template-areas:
+    "name button"
+    "description description";
+}
+
+.profile__name {
+  grid-area: name;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 48px;
+  margin: 0 18px 16px 0;
+  text-align: center;
+  overflow: hidden;
+   max-width: 30ch;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ffffff;
+}
+.profile__description {
+  grid-area: description;
+  font-weight: 400;
+  font-size: 18px;
+  max-width: 15ch;
+  overflow: clip;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #ffffff;
+}
+
+
+
+
+.profile__edit-button {
+  grid-area: button;
+  width: 24px;
+  height: 24px;
+  right: 50px;
+  align-self: center;
+  background: transparent;
+  border: 1px solid #ffffff;
+}
+
+.profile__edit-button:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+.profile__avatar{
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover;
+}
+
+.profile__add-button {
+  width: 150px;
+  height: 50px;
+  align-self: center;
+  background: transparent;
+  border: 2px solid #ffffff;
+  margin-left: auto;
+}
+
+.profile__add-button:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.profile__add-button-image {
+  width: 22px;
+  height: 22px;
+  align-self: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+@media screen and (max-width: 800px) {
+  .profile {
+    max-width: 650px;
+  }
+}
+
+@media screen and (max-width: 580px) {
+  .header {
+    margin: 0 auto;
+    margin-left: 29px;
+  }
+  .profile__container {
+    flex-direction: column;
+  }
+
+
+  .profile__name {
+    width: 196px;
+    font-size: 22px;
+    text-align: center;
+  }
+  .profile__description {
+    width: 282px;
+    font-size: 14px;
+    text-align: center;
+  }
+  .profile__add-button {
+    width: 282px;
+
+    margin-left: 0;
+  }
+}
