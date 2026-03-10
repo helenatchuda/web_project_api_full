@@ -5,11 +5,13 @@ import { UnauthorizedError } from "../erros/Unauthorize.js";
 
 export function authMiddleware(req, res, next) {
   const token = req.headers.authorization;
+  console.log("quebrei aqui",token)
   if(!token || !token.startsWith('Bearer ')){
     throw new UnauthorizedError('Unauthorized')
   }
 
   const tokenWithoutBearer = token.replace('Bearer ', '')
+  console.log("entrei",tokenWithoutBearer)
   try {
     const payload = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET)
 

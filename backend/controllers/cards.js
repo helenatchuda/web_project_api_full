@@ -24,12 +24,14 @@ export async function getCards(req,res,next){
 
 }
 export async function createCard(req,res,next){
+  console.log("CHEQUEI",req)
   const body = req.body
      console.log(body.name);
 
 
      try{
       const cardCreated = await Card.create({
+
         name: body.name,
         link: body.link,
         owner: body.owner,
@@ -39,6 +41,7 @@ export async function createCard(req,res,next){
       res.status(201).json(cardCreated);
     }catch(err){
       next (err);
+
 
     }
 }

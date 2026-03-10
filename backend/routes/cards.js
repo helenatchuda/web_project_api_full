@@ -17,7 +17,7 @@ export const cardsRouter = Router();
 cardsRouter.get("/:id", getCardById);
 
 cardsRouter.post("/",createCard);
- cardsRouter.put("/:id",updateCard);
+cardsRouter.put("/:id",updateCard);
 
  cardsRouter.delete("/:id", deleteCard);
  cardsRouter.put("/:cardId/likes", likeCard);
