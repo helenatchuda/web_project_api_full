@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export async function register(req, res, next) {
   const body = req.body;
-  console.log(body.name);
+  console.log("body.name",body.name);
 
   try {
 
@@ -14,11 +14,9 @@ export async function register(req, res, next) {
 
 
     const userCreated = await User.create({
-      name: body.name,
-      about: body.about,
-      avatar: body.avatar,
+
       email: body.email,
-      password: body.password,
+      hashPassword:hashPassword
     });
     console.log(userCreated);
     res.status(201).json(userCreated);
@@ -32,11 +30,13 @@ export async function authenticate(req, res, next) {
   const {email, password}= req.body;
 
   try {
-    const user = await User.findOne({email:email}).seletct('+password')
+
+    const user = await User.findOne({email:email}).select("+hashPassword")
+    console.log("dados do utilizador",user)
     if(!user){
       throw new UnauthorizedError('Email ou senha inválidos')
     }
-    const isPasswordCorrect = await compare(password, user.password)
+    const isPasswordCorrect = await compare(password, user.hashPassword)
 
     if(!isPasswordCorrect){
 
@@ -59,7 +59,7 @@ export async function authenticate(req, res, next) {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cokie(
+    res.cookie(
       'refreshToken',
       refreshToken,
       {
@@ -73,7 +73,7 @@ export async function authenticate(req, res, next) {
 
 
     res.status(200).json({token})
-
+  next()
   } catch (err) {
     next(err);
   }

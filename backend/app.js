@@ -46,9 +46,7 @@ app.use('/auths', authsRouter);
 app.use(authMiddleware)
 app.use('/cards', cardsRouter);
 app.use('/users', usersRouter);
-app.use((error,req,res,next)=>{
-  res.status(error.statusCode).json(error.mensage)
-})
+
 app.use(notfoundMiddleware);
 
 

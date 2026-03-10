@@ -1,109 +1,141 @@
+import { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom"; // Importações necessárias
 import Header from "./Header/Header";
 import Main from "./Main/Main";
 import Footer from "./Footer/Footer";
+import Login from "./Login/Login"; 
+import Register from "./Register/Register";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { useState, useEffect } from "react";
 import { api } from "../utils/api";
 
 function App() {
+  // --- NOVOS ESTADOS (O que o instrutor pediu) ---
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [accessToken, setAccessToken] = useState(null);
+  
+  const navigate = useNavigate(); // Resolve o erro de 'navigate'
 
-  // Buscar dados do usuário
+  // --- FUNÇÃO PARA CARREGAR DADOS (O que o instrutor pediu) ---
+  const loadAppData = async () => {
+    try {
+      const [userData, cardsData] = await Promise.all([
+        api.getUserInfo(),
+        api.getInitialCards(),
+      ]);
+      setCurrentUser(userData);
+      setCards(cardsData);
+    } catch (error) {
+      console.error("Erro ao carregar dados iniciais:", error);
+    }
+  };
+
+  // Tenta recuperar sessão se houver um token (Opcional, mas recomendado)
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then((userData) => {
-        setCurrentUser(userData);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar usuário:", error);
-      });
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      api.setAccessToken(token);
+      setIsLoggedIn(true);
+      loadAppData();
+    }
   }, []);
 
-  // Buscar cards
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then((cardsData) => {
-        setCards(cardsData);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar cards:", error);
-      });
-  }, []);
+  // --- LÓGICA DE LOGIN ---
+  async function handleLogin(data) {
+    try {
+      const res = await api.login(data); // data contém {email, password}
+      
+      // Salva o token na API e no estado
+      api.setAccessToken(res.token);
+      setAccessToken(res.token);
+     
+      
+      // Busca informações do usuário para pegar o email
+      const info = await api.getUserInfo();
+      console.log("info",info)
+      setUserEmail(info.email);
+      
+      await loadAppData().then(()=> setIsLoggedIn(true)).finally(()=> navigate("/"))
+       
+      // Redireciona para a home
+    } catch (err) {
+      console.error("Erro ao fazer login:", err);
+      // handleOpenPopup("loginError"); // Ative se tiver essa função
+    }
+  }
+
+  // --- LÓGICA DE REGISTRO ---
+  const handleRegister = async (data) => {
+    try {
+      await api.register(data);
+      // handleOpenPopup(registerSuccessPopup);
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro no registro:", error);
+    }
+  };
+
+  // --- RESTANTE DAS FUNÇÕES (Cards e Avatar) ---
   function handleAddCard(card) {
     api.addNewCard(card).then((addedCard) => {
       setCards([addedCard, ...cards]);
     });
   }
 
-  async function handleLogin(data) {
-    try {
-      const res = await api.login(data);
-      setAccessToken(res.token);
-      api.setAccessToken(res.token);
-      setIsLoggedIn(true);
-
-      const info = await api.getUserInfo();
-      setUserEmail(info.email);
-      await loadAppData();
-    } catch (err) {
-      console.error("Erro ao fazer login:", err);
-
-      handleOpenPopup("loginError");
-    }
-  }
-const handleRegister = async (data) => {
-    try {
-      await api.register(data);
-      handleOpenPopup(registerSuccessPopup);
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Função para atualizar likes
   function handleCardLike(updatedCard, like) {
-    console.log(updatedCard);
-    api.changeLikeCardStatus(updatedCard._id, like);
-    setCards((prevCards) =>
-      prevCards.map((card) =>
-        card._id === updatedCard._id ? updatedCard : card,
-      ),
-    );
+    api.changeLikeCardStatus(updatedCard._id, like).then((newCard) => {
+      setCards((prevCards) =>
+        prevCards.map((card) => (card._id === updatedCard._id ? newCard : card))
+      );
+    });
   }
+
   function handleUpdateAvatar(avatar) {
     api.setUserAvatar(avatar).then((avatarData) => {
       setCurrentUser(avatarData);
     });
   }
- 
 
-  // Função para excluir card
   function handleCardDelete(card) {
-    api
-      .deleteCard(card._id)
-      .then(() =>
-        setCards((prevCards) =>
-          prevCards.filter((item) => item._id !== card._id),
-        ),
-      );
+    api.deleteCard(card._id).then(() =>
+      setCards((prevCards) => prevCards.filter((item) => item._id !== card._id))
+    );
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header />
-      <Main
-        cards={cards}
-        onUpdateUser={setCurrentUser}
-        onCardLike={handleCardLike}
-        onCardDelete={handleCardDelete}
-        onUpdateAvatar={handleUpdateAvatar}
-        onAddCard={handleAddCard}
-      />
-      <Footer />
+      <div className="page">
+        <Header userEmail={userEmail} isLoggedIn={isLoggedIn} />
+        
+        <Routes>
+          
+          <Route 
+            path="/" 
+            element={
+              isLoggedIn ? (
+                <Main
+                  cards={cards}
+                  onUpdateUser={setCurrentUser}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  onUpdateAvatar={handleUpdateAvatar}
+                  onAddCard={handleAddCard}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+
+       
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        </Routes>
+
+        <Footer />
+      </div>
     </CurrentUserContext.Provider>
   );
 }

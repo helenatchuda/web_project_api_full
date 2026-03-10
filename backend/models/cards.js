@@ -21,10 +21,13 @@ const cardSchema = new mongoose.Schema({
     ref: 'User',
     default: []
   }],
+  
+
   createdAt:{
     type: Date,
     default: Date.now
   }
+
 });
 export const Card = mongoose.model('Card', cardSchema);
 

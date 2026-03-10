@@ -13,12 +13,14 @@ export function authMiddleware(req, res, next) {
   try {
     const payload = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET)
 
-  } catch (err) {
-    throw new UnauthorizedError('Unauthorized')
-  }
-
  req.user = {
   _id : payload._id
  }
+
+  } catch (err) {
+    throw new UnauthorizedError('Unauthorized')
+
+  }
+
   next();
 }

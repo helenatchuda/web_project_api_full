@@ -2,8 +2,39 @@ class Api {
   constructor({ baseUrl, headers }) {
     this._baseUrl = baseUrl;
     this.headers = headers;
-    // corpo do construtor
+    this._accessToken = null; // Armazena o token em memória
   }
+
+  //  Criar o método setAccessToken
+  setAccessToken(token) {
+    this._accessToken = token;
+  }
+
+  //  No método getHeader não pegamos mais do local storage, pega do this._accessToken
+  getHeader() {
+    return {
+      ...this.headers,
+      Authorization: `Bearer ${this._accessToken}`,
+    };
+  }
+
+  _handleServerResponse(res) {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Erro: ${res.status}`);
+  }
+
+  // TODO: No método de refresh a rota é /auths/refresh-token e não recebe body
+  refresh() {
+    return fetch(`${this._baseUrl}/auths/refresh-token`, {
+      method: "POST",
+      headers: this.headers, 
+      credentials: "include", // Importante para enviar cookies de refresh se houver
+    }).then(this._handleServerResponse);
+  }
+
+  //  Usar o this._fetchWithRefresh em todas as requisições para rotas protegidas
   async _fetchWithRefresh(url, options) {
     const response = await fetch(url, options);
 
@@ -11,140 +42,87 @@ class Api {
       return response;
     }
 
-    const refreshReponse = await this.refresh();
-    this.setAccessToken(refreshReponse.token);
+    // Se deu 401, tenta renovar o token
+    const refreshResponse = await this.refresh();
+    
+    const newToken = refreshResponse.token || refreshResponse.accessToken;
+    this.setAccessToken(newToken);
 
-    options.headers = this._getHeaders();
+    
+    options.headers = this.getHeader();
     return fetch(url, options);
   }
 
-  _handleServerResponse(res) {
-    if (res.ok) {
-      return res.json();
-    }
-  }
+
 
   getInitialCards() {
-    return fetch(`${this._baseUrl}/cards`, {
-      headers: this.headers,
-    }).then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      // se o servidor retornar um erro, rejeite a promessa
-      return Promise.reject(`Error: ${res.status}`);
-    });
+    return this._fetchWithRefresh(`${this._baseUrl}/cards`, {
+      headers: this.getHeader(),
+    }).then(this._handleServerResponse);
   }
+
+  getUserInfo() {
+    return this._fetchWithRefresh(`${this._baseUrl}/users/me`, {
+      headers: this.getHeader(),
+    }).then(this._handleServerResponse);
+  }
+
   setUserAvatar(avatar) {
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
+    return this._fetchWithRefresh(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this.headers,
+      headers: this.getHeader(),
       body: JSON.stringify(avatar),
     }).then(this._handleServerResponse);
   }
 
- addNewCard({ name, link }) {
-  return this._fetchWithRefresh(`${this._baseUrl}/cards`, {
-    method: "POST",
-    headers: this.getHeader(), 
-    body: JSON.stringify({ name, link }),
-  }).then(this._handleServerResponse);
-}
-
-  //PATCH https://around-api.pt-br.tripleten-services.com/v1/users/me
   setUserInfo({ name, about }) {
-    return fetch(`${this._baseUrl}/users/me`, {
+    console.log("serUserInfo")
+    return this._fetchWithRefresh(`${this._baseUrl}/users/me`, {
+      
       method: "PATCH",
-      headers: this.headers,
-      body: JSON.stringify({
-        name,
-        about,
-      }),
-    });
-  }
-
-  deleteCard(cardId) {
-    return fetch(`${this._baseUrl}/cards/${cardId}`, {
-      method: "DELETE",
-      headers: this.headers,
+      headers: this.getHeader(),
+      body: JSON.stringify({ name, about }),
     }).then(this._handleServerResponse);
   }
 
-  getHeader() {
-    console.log("getHeader",localStorage)
-    const token = localStorage.getItem("token");
-    let authHeaders = {};
-    if (token) {
-      authHeaders = {
-        Authorization: `Bearer ${token}`,
-      };
-    }
-    return {
-      ...this.headers,
-      ...authHeaders,
-    };
+  addNewCard({ name, link }) {
+    return this._fetchWithRefresh(`${this._baseUrl}/cards`, {
+      method: "POST",
+      headers: this.getHeader(),
+      body: JSON.stringify({ name, link }),
+    }).then(this._handleServerResponse);
   }
+
+  deleteCard(cardId) {
+    return this._fetchWithRefresh(`${this._baseUrl}/cards/${cardId}`, {
+      method: "DELETE",
+      headers: this.getHeader(),
+    }).then(this._handleServerResponse);
+  }
+
+  changeLikeCardStatus(cardId, like) {
+    return this._fetchWithRefresh(`${this._baseUrl}/cards/${cardId}/likes`, {
+      method: like ? "PUT" : "DELETE",
+      headers: this.getHeader(),
+    }).then(this._handleServerResponse);
+  }
+
+  /* --- ROTAS PÚBLICAS (NÃO USAM FETCH WITH REFRESH) --- */
+
   register({ email, password }) {
     return fetch(`${this._baseUrl}/auths/register`, {
       method: "POST",
       headers: this.headers,
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then(this._handleServerResponse);
-  }
-  login({ email, password }) {
-    return fetch(`${this._baseUrl}/auths/login`, { 
-      method: "POST",
-      headers: this._defaultHeaders,
       body: JSON.stringify({ email, password }),
     }).then(this._handleServerResponse);
   }
-
-  logout() {
-    return this._fetchWithRefresh(`${this._baseUrl}/auth/logout`, {
-      method: "POST",
-      headers: this._getHeaders(),
-      credentials: "include",
-    }).then(this._handleServerResponse);
-  }
-  authorize({ email, password }) {
-    return fetch(`${this._baseUrl}/auths/register`, {
-      method: "POST",
-      headers: this.headers,
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then(this._handleServerResponse);
-  }
-  refresh() {
-    return fetch(`${this._baseUrl}/auths/refresh`, {
-      method: "POST",
-      headers: this.headers,
-      credentials: "include",
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then(this._handleServerResponse);
-  }
-
-  //GET https://around-api.pt-br.tripleten-services.com/v1/users/me
-  getUserInfo() {
-    console.log("getHeader",localStorage)
-    return this._fetchWithRefresh(`${this._baseUrl}/users/me`, {
-      headers: this.getHeader(),
-      credentials: "include",
-    }).then(this._handleServerResponse);
-  }
-  changeLikeCardStatus(cardId, like) {
-    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-      headers: this._getHeader(),
-      method: like ? "PUT" : "DELETE",
-    }).then(this._handleServerResponse);
-  }
+login({ email, password }) { 
+  return fetch(`${this._baseUrl}/auths/login`, {
+    method: "POST",
+    headers: this.headers,
+    body: JSON.stringify({ email, password }), 
+  }).then(this._handleServerResponse);
+}
 }
 
 export const api = new Api({
@@ -152,4 +130,4 @@ export const api = new Api({
   headers: {
     "Content-Type": "application/json",
   },
-})
+});

@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   type: String,
   minlength: 2,
   maxlength: 30,
-  required: true
+  required: false
 
  },
  email:{
@@ -29,11 +29,13 @@ const userSchema = new mongoose.Schema({
   type:String,
   minlength:2,
   maxlength:30,
-  required:true
+  required:false
  },
  avatar:{
   type:String,
-  required:true
+  required:false
  }
+},{
+  bufferCommands:false
 })
 export const User = mongoose.model('User', userSchema);

@@ -20,6 +20,7 @@ export default function Main({
   cards
 
 }) {
+  console.log("Main")
   const currentUser = useContext(CurrentUserContext); // Obter usuário do contexto
 
   const [popup, setPopup] = useState(null);

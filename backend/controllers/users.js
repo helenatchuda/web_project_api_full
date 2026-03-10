@@ -26,6 +26,7 @@ export async function getUserById(req, res, next) {
   }
 }
 export async function getAuthenticatedUser(req, res, next) {
+  console.log("req",req)
   const userId = req.user._id;
   console.log(userId)
    try{
