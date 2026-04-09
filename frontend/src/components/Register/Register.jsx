@@ -1,73 +1,64 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useState } from "react";
+
 
 const Register = ({ onRegister }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onRegister({ email, password });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onRegister(data);
   };
 
   return (
-    <section className="popup"> 
-      <div className="popup__content"> 
-        <form 
-          className='form' 
-          name='register-form' 
-          id='register-form' 
-          onSubmit={handleSubmit}
-        >
-          <h2 className='popup__title'>Inscrever-se</h2>
+    <div className="register">
+      <p className="register__welcome">Inscrever-se</p>
 
-          <label className='form__field'>
-            <input
-              className='form__input'
-              id='user-email'
-              name='user-email'
-              placeholder='E-mail'
-              required
-              type='email'
-              
-              minLength="6"
-              maxLength="40"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <span className='form__error' id='user-email-error'></span>
-          </label>
-
-          <label className='form__field'>
-            <input
-              className='form__input'
-              id='user-password'
-              name='user-password'
-              placeholder='Senha'
-              required
-              type='password'
-             
-              minLength="6"
-              maxLength="20"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <span className='form__error' id='user-password-error'></span>
-          </label>
-
-          <button className='popup__save-button' type='submit'>
+      <form className="register__form" onSubmit={handleSubmit}>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="E-mail"
+          value={data.email}
+          onChange={handleChange}
+           autoComplete="off"
+        />
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Senha"
+          value={data.password}
+          onChange={handleChange}
+          autoComplete="new-password"
+        />
+        <div className="register__button-container">
+          <button type="submit" className="register__link">
             Inscrever-se
           </button>
-
-          <p className='form__text'>
-            Já é um membro?{" "}
-            <Link to="/login" className='form__link'>
-              Faça o login aqui!
-            </Link>
-          </p>
-        </form>
+        </div>
+      </form>
+      <div className="register__signin">
+        <p>
+          Já é um membro?{" "}
+          <Link to="/signin" className="register__login-link">
+            Faça o login aqui!
+          </Link>
+        </p>
       </div>
-    </section>
+    </div>
+
   );
 };
 

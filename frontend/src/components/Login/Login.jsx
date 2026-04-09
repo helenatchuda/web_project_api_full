@@ -1,62 +1,68 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
-const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  
-  const [password, setPassword] = useState('');
+const Login = ({  onLogin }) => {
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onLogin({ email, password });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+     onLogin(data);
+  };
+
+
   return (
-    <section className="popup"> 
-      <div className="popup__content"> 
-        <form className='form' id='login-form' onSubmit={handleSubmit}>
-          <h2 className='popup__title'>Entrar</h2>
-
-          <label className='form__field'>
-            <input
-              className='form__input'
-              placeholder='E-mail'
-              required
-              type='email'
-              minLength="6" 
-              maxLength="40"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-
-          <label className='form__field'>
-            <input
-              className='form__input'
-              placeholder='Senha'
-              required
-              type='password'
-             
-              minLength="6"
-              maxLength="20"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-
-          <button className='popup__save-button' type='submit'>
+    <div className="login">
+      <p className="login__welcome">
+        Entrar
+      </p>
+      <form className="login__form" onSubmit={handleSubmit}>
+        <input
+          id="email"
+          required
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={data.email}
+          onChange={handleChange}
+          autoComplete="off"
+        />
+        <input
+          id="password"
+          required
+          name="password"
+          type="password"
+          placeholder="Senha"
+          value={data.password}
+          onChange={handleChange}
+          autoComplete="new-password"
+        />
+        <div className="login__button-container">
+          <button type="submit" className="login__button">
             Entrar
           </button>
+        </div>
+      </form>
 
-          <p className='form__text'>
-            Ainda não é membro?{" "}
-            <Link to="/register" className='form__link'>
-              Inscreva-se aqui!
-            </Link>
-          </p>
-        </form>
+      <div className="login__signup">
+        <p>
+          Ainda não é membro?{" "}
+          <Link to="/signup" className="login__signup-link">
+            Inscreva-se aqui!
+          </Link>
+        </p>
       </div>
-    </section>
+    </div>
   );
 };
 

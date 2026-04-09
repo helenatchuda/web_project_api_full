@@ -1,0 +1,55 @@
+.popup__container_tooltip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    width: 430px;
+    min-height: 330px;
+    border-radius: 10px;
+    position: relative;
+    box-sizing: border-box;
+    padding: 60px 36px;
+}
+
+.popup__icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 32px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.popup__icon_success {
+    background-image: url("../images/icon__Success.png");
+}
+
+.popup__icon_error {
+    background-image: url("../images/icon__Err.png");
+}
+
+.popup__title_tooltip {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 29px;
+    text-align: center;
+    color: #000000;
+    margin: 0;
+    max-width: 358px;
+}
+
+@media screen and (max-width: 600px) {
+    .popup__container_tooltip {
+        width: 282px;
+        padding: 50px 22px;
+        margin-top: 20px;
+    }
+
+    .popup__title_tooltip {
+        font-size: 20px;
+        line-height: 24px;
+        max-width: 220px;
+    }
+}

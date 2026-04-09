@@ -1,23 +1,28 @@
 import card from "../../images/image2_card.png";
 import lixeira from "../../images/Trash_lixeira.png";
 import heart from "../../images/heart.png";
+import heartativa from "../../images/heartativa.png";
 import ImagePopup from "../ImagePopup/ImagePopup";
+import React, { useContext } from 'react';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext'; 
 
 export default function Card(props) {
-  const { card, isLiked, isOwn, onCardLike, onCardDelete, onCardClick } = props;
+  const currentUser = useContext(CurrentUserContext);
+  const { card, isOwn, onCardLike, onCardDelete, onCardClick } = props;
   const { name, link } = props.card;
+  const isLiked = card.likes.some(like => like === currentUser._id);
+  
 
-  const  handleLikeClick=(e)=> {
+const handleLikeClick = (e) => {
+  e.stopPropagation(); 
+  console.log("like")
+  onCardLike(card); 
+}
 
-    onCardLike({...card,isLiked:!isLiked},!isLiked
-     
-    );
-  }
-
-  function handleDeleteClick(e) {
+function handleDeleteClick(e) {
     e.stopPropagation();
     onCardDelete(card);
-  }
+}
 
   function handleImageClick() {
     if (onCardClick) {
@@ -43,7 +48,7 @@ export default function Card(props) {
         </div>
         <div className="card__footer">
           <h2 className="card__title">{name}</h2>
-          <img src={heart} alt="Curtir cartão" className={heartClassName} onClick={handleLikeClick}/>
+         <img src={isLiked ? heartativa : heart} alt="Curtir cartão" className={heartClassName} onClick={handleLikeClick}/>
         </div>
       </li>
     </>

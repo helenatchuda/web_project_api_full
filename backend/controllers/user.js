@@ -27,6 +27,7 @@ export async function register(req, res, next) {
 
 
 export async function authenticate(req, res, next) {
+  console.log("chegou até aqui");
   const {email, password}= req.body;
 
   try {

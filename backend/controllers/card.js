@@ -24,7 +24,7 @@ export async function getCards(req,res,next){
 
 }
 export async function createCard(req,res,next){
-  console.log("CHEQUEI",req)
+
   const body = req.body
      console.log(body.name);
 
@@ -34,7 +34,9 @@ export async function createCard(req,res,next){
 
         name: body.name,
         link: body.link,
-        owner: body.owner,
+        owner:req.user._id
+
+
 
       });
       console.log(cardCreated);
@@ -63,6 +65,8 @@ export async function updateCard(req,res){
 
   try{
     const likedCard = await Card.findByIdAndUpdate(
+
+
       cardId,
       {$addToSet:{likes:req.user._id}},
       {new:true},
@@ -88,19 +92,18 @@ export async function dislikeCard (req,res,next){
     return next (err);
   }
 }
-export async function deleteCard(req,res){
+export async function deleteCard(req,res,next){
  const{id}=req.params
  console.log("ID to delete:", id);
 
  try{
   await Card
-    .findByIdAndDelete(id)
-    orFail(()=>{throw new NotFoundError("ID do cartão não encontrado")})
+   .findByIdAndDelete(id)
+   .orFail(()=>{throw new NotFoundError("ID do cartão não encontrado")})
+
  }catch(err){
   return next (err);
  }
  res.status(200).json({message:"Cartão deletado com sucesso"})
 
 }
-
-

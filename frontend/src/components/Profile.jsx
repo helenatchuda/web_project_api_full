@@ -5,16 +5,16 @@ import { useContext } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 export default function Profile(props) {
+  const currentUser = useContext(CurrentUserContext);
 
-
-  const currentUser = useContext(CurrentUserContext)
-  console.log(currentUser)
   return (
     <section className="profile">
       <div className="profile__container">
         <img
-          src={currentUser.avatar}
-          
+          src={currentUser?.avatar || avatar}
+          onError={(event) => {
+            event.target.src = avatar;
+          }}
           onClick={props.onPhotoClick}
           alt="Foto de perfil"
           className="profile__avatar"

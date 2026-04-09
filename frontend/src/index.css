@@ -8,4 +8,10 @@
 @import url("./vendor/font.css");
 @import url("./blocks/popup.css");
 @import url("./blocks/footer.css");
+@import url("./blocks/Register.css");
+@import url("./blocks/login.css");
+@import url("./blocks/info-tooltip.css");
+
+
+
 
