@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { cardRouter } from "./routes/card.js";
 import { authsRouter } from "./routes/auths.js";
+import { usersRouter } from "./routes/users.js";
 import { reguestlogger, errorlogger } from "./middewares/regloggerMideware.js";
 import { notfoundMiddleware } from "./middewares/notfound.js";
 import { authMiddleware } from "./middewares/authMideware.js";
@@ -36,6 +37,7 @@ app.use("/auths", authsRouter);
 
 /*middleware de autenticação para rotas protegidas*/
 app.use(authMiddleware);
+app.use("/users", usersRouter);
 
 /*rotas protegidas*/
 app.use("/cards", cardRouter);
