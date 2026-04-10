@@ -1,5 +1,6 @@
 import{Card} from "../models/cards.js";
-import { NotFoundError } from "../erros/NotFoundError.js";
+import { UnauthorizedError } from '../erros/Unauthorize.js';
+
 
 export async function getCards(req,res,next){
   console.log("Minha requisição:", req);
