@@ -64,10 +64,10 @@
 
 
 .card__heart_active {
-  filter: invert(34%) sepia(90%) saturate(430%) hue-rotate(326deg) brightness(103%) contrast(101%);
+  
+  filter: brightness(0);
   cursor: pointer;
 }
-
 /*.card__delete-button {
     width: 20px;
   height: 25px;
