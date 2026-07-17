@@ -126,7 +126,7 @@ login({ email, password }) {
 }
 
 export const api = new Api({
-  baseUrl: "http://localhost:3001",
+  baseUrl: import.meta.env.VITE_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

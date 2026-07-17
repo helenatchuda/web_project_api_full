@@ -64,7 +64,6 @@
 
 
 .card__heart_active {
-  
   filter: brightness(0);
   cursor: pointer;
 }
