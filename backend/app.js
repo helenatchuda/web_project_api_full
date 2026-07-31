@@ -12,7 +12,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 const app = express();
-
+const allowedOrigin =
+  process.env.CLIENT_URL || "https://web-project-api-full-chi.vercel.app";
 
 main()
   .then(() => console.log("Connected to DB"))
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigin,
     credentials: true,
   }),
 );
@@ -35,12 +36,9 @@ app.use(
 /*rotas de autenticação (sem middleware)*/
 app.use("/auths", authsRouter);
 
-/*middleware de autenticação para rotas protegidas*/
-app.use(authMiddleware);
-app.use("/users", usersRouter);
-
 /*rotas protegidas*/
-app.use("/cards", cardRouter);
+app.use("/users", authMiddleware, usersRouter);
+app.use("/cards", authMiddleware, cardRouter);
 
 //*middleware de tratamento de erros do celebrate*/
 app.use(errors());

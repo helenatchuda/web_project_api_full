@@ -10,6 +10,7 @@ export async function register(req, res, next) {
   const body = req.body;
   console.log("body.name",body.name);
 
+
   try {
 
     const salt = await genSalt(10)
@@ -68,16 +69,16 @@ export async function authenticate(req, res, next) {
       refreshToken,
       {
         httpOnly: true,
-        secure: true,
-        SameSite: 'None',
-        maxAge: 7*24*60*60 // 7 dias em milissegundos
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias em milissegundos
       }
      )
 
 
 
     res.status(200).json({token})
-  next()
+
   } catch (err) {
     next(err);
   }
@@ -103,12 +104,11 @@ export async function logout(req, res, next) {
     try{
 
       await User.findByIdAndUpdate(userId,{refreshToken: null})
-      res.clearCookies('refreshToken',
+      res.clearCookie('refreshToken',
         {
           httpOnly: true,
-        secure: true,
-        SameSite: 'None',
-
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'none',
         }
       )
      res.status(204).send()

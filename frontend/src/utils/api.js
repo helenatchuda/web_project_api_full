@@ -14,7 +14,9 @@ class Api {
   getHeader() {
     return {
       ...this.headers,
-      Authorization: `Bearer ${this._accessToken}`,
+      ...(this._accessToken
+        ? { Authorization: `Bearer ${this._accessToken}` }
+        : {}),
     };
   }
 
@@ -25,32 +27,15 @@ class Api {
     return Promise.reject(`Erro: ${res.status}`);
   }
 
-  // TODO: No método de refresh a rota é /auths/refresh-token e não recebe body
-  refresh() {
-    return fetch(`${this._baseUrl}/auths/refresh-token`, {
-      method: "POST",
-      headers: this.headers, 
-      credentials: "include", // Importante para enviar cookies de refresh se houver
-    }).then(this._handleServerResponse);
-  }
-
-  //  Usar o this._fetchWithRefresh em todas as requisições para rotas protegidas
   async _fetchWithRefresh(url, options) {
-    const response = await fetch(url, options);
+    const headers = this.getHeader();
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      credentials: "include",
+    });
 
-    if (response.status !== 401) {
-      return response;
-    }
-
-    // Se deu 401, tenta renovar o token
-    const refreshResponse = await this.refresh();
-    
-    const newToken = refreshResponse.token || refreshResponse.accessToken;
-    this.setAccessToken(newToken);
-
-    
-    options.headers = this.getHeader();
-    return fetch(url, options);
+    return response;
   }
 
 
@@ -113,20 +98,23 @@ class Api {
     return fetch(`${this._baseUrl}/auths/register`, {
       method: "POST",
       headers: this.headers,
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     }).then(this._handleServerResponse);
   }
-login({ email, password }) { 
-  return fetch(`${this._baseUrl}/auths/login`, {
-    method: "POST",
-    headers: this.headers,
-    body: JSON.stringify({ email, password }), 
-  }).then(this._handleServerResponse);
-}
+
+  login({ email, password }) {
+    return fetch(`${this._baseUrl}/auths/login`, {
+      method: "POST",
+      headers: this.headers,
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    }).then(this._handleServerResponse);
+  }
 }
 
 export const api = new Api({
-  baseUrl: import.meta.env.VITE_BASE_URL,
+  baseUrl: import.meta.env.VITE_BASE_URL || "https://web-project-api-full-2qtg.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },

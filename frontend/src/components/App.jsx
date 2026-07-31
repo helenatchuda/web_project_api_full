@@ -72,22 +72,13 @@ function App() {
   // --- LÓGICA DE LOGIN ---
   async function handleLogin(data) {
     try {
-      console.log("Dados de login recebidos:", data); // 🔍 Debug
-      const res = await api.login(data); // data contém {email, password}
-      console.log("Resposta do login:", res);
-      // Salva o token na API, no localStorage e no estado
+      const res = await api.login(data);
       api.setAccessToken(res.token);
       localStorage.setItem("jwt", res.token);
       setAccessToken(res.token);
-
-      // Busca informações do usuário para pegar o email
-      const info = await api.getUserInfo();
-      console.log("info", info);
-      setUserEmail(info.email);
-
-      await loadAppData()
-        .then(() => setIsLoggedIn(true))
-        .finally(() => navigate("/"));
+      setUserEmail(data.email);
+      setIsLoggedIn(true);
+      navigate("/");
     } catch (err) {
       console.error("Erro ao fazer login:", err);
       openInfoTooltip(
