@@ -52,7 +52,7 @@ const Register = ({ onRegister }) => {
       <div className="register__signin">
         <p>
           Já é um membro?{" "}
-          <Link to="/signin" className="register__login-link">
+          <Link to="/login" className="register__login-link">
             Faça o login aqui!
           </Link>
         </p>

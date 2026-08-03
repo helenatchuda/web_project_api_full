@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
-import{api} from "../../utils/api";
-
 
 export default function EditProfile({ onUpdateUser, onClose }) {
   // Obter o contexto do usuário atual
@@ -40,18 +38,13 @@ export default function EditProfile({ onUpdateUser, onClose }) {
     setIsSubmitting(true);
 
     try {
-      // Chamar a função do App para atualizar o usuário
+      // Chamar a função do App para atualizar o usuário no backend e no estado global
       await onUpdateUser({
         name: name.trim(),
         about: description.trim(),
       });
-      api.setUserInfo({
 
-        name: name.trim(),
-        about: description.trim(),
-      })
-
-     onClose();
+      onClose();
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
       setIsSubmitting(false);

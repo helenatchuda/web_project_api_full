@@ -9,7 +9,8 @@
     border-radius: 10px;
     position: relative;
     box-sizing: border-box;
-    padding: 60px 36px;
+    padding: 56px 36px 40px;
+    box-shadow: 0 22px 45px rgba(0, 0, 0, 0.14);
 }
 
 .popup__icon {
@@ -22,7 +23,7 @@
 }
 
 .popup__icon_success {
-    background-image: url("../images/icon__Success.png");
+    background-image: url("../images/success-icon.svg");
 }
 
 .popup__icon_error {
@@ -38,6 +39,15 @@
     color: #000000;
     margin: 0;
     max-width: 358px;
+}
+
+.tooltip__message {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 24px;
+    color: #4b4b4b;
+    max-width: 358px;
+    margin-bottom: 0;
 }
 
 @media screen and (max-width: 600px) {

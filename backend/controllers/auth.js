@@ -18,9 +18,11 @@ export async function register(req, res, next) {
 
 
     const userCreated = await User.create({
-
       email: body.email,
-      hashPassword:hashPassword
+      hashPassword: hashPassword,
+      name: body.name,
+      about: body.about,
+      avatar: body.avatar,
     });
     console.log(userCreated);
     res.status(201).json(userCreated);

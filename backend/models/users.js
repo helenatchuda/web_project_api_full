@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
   type: String,
   minlength: 2,
   maxlength: 30,
-  required: false
-
+  required: false,
+  default: "Jacques Cousteau"
  },
  email:{
   type:String,
@@ -29,11 +29,13 @@ const userSchema = new mongoose.Schema({
   type:String,
   minlength:2,
   maxlength:30,
-  required:false
+  required:false,
+  default: "Explorer"
  },
  avatar:{
   type:String,
-  required:false
+  required:false,
+  default: "https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg"
  }
 },{
   bufferCommands:false

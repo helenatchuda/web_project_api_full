@@ -57,7 +57,7 @@ const Login = ({  onLogin }) => {
       <div className="login__signup">
         <p>
           Ainda não é membro?{" "}
-          <Link to="/signup" className="login__signup-link">
+          <Link to="/register" className="login__signup-link">
             Inscreva-se aqui!
           </Link>
         </p>

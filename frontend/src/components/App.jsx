@@ -5,7 +5,7 @@ import Main from "./Main/Main";
 import Footer from "./Footer/Footer";
 import Login from "./Login/Login";
 import Register from "./Register/Register";
-import Popup from "./Popup/Popup";
+import InfoTooltip from "./InfoTooltip/infoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { api } from "../utils/api";
 
@@ -50,23 +50,6 @@ function App() {
   const openInfoTooltip = (title, message, type = "success") => {
     setInfoTooltip({ title, message, type });
     setIsInfoTooltipOpen(true);
-  };
-
-  const renderInfoTooltip = () => {
-    const isSuccess = infoTooltip.type === "success";
-    const iconClass = isSuccess
-      ? "tooltip__icon tooltip__icon_success"
-      : "tooltip__icon tooltip__icon_error";
-
-    return (
-      <div className="tooltip__content">
-        <div className={iconClass} aria-hidden="true">
-          {isSuccess ? "✓" : "✕"}
-        </div>
-        <h3 className="popup__title">{infoTooltip.title}</h3>
-        <p className="tooltip__message">{infoTooltip.message}</p>
-      </div>
-    );
   };
 
   // --- LÓGICA DE LOGIN ---
@@ -139,10 +122,17 @@ function App() {
     });
   }
 
-  function handleUpdateAvatar(avatar) {
-    api.setUserAvatar(avatar).then((avatarData) => {
-      setCurrentUser(avatarData);
-    });
+  async function handleUpdateAvatar(avatar) {
+    await api.setUserAvatar(avatar);
+    const freshUser = await api.getUserInfo();
+    setCurrentUser(freshUser);
+    return freshUser;
+  }
+
+  async function handleUpdateUser(data) {
+    const updatedUser = await api.setUserInfo(data);
+    setCurrentUser((prev) => ({ ...prev, ...updatedUser }));
+    return updatedUser;
   }
 
   function handleCardDelete(card) {
@@ -174,7 +164,7 @@ function App() {
               isLoggedIn ? (
                 <Main
                   cards={cards}
-                  onUpdateUser={setCurrentUser}
+                  onUpdateUser={handleUpdateUser}
                   onCardLike={handleCardLike}
                   onCardDelete={handleCardDelete}
                   onUpdateAvatar={handleUpdateAvatar}
@@ -191,10 +181,18 @@ function App() {
             path="/register"
             element={<Register onRegister={handleRegister} />}
           />
+          <Route path="/signin" element={<Navigate replace to="/login" />} />
+          <Route path="/signup" element={<Navigate replace to="/register" />} />
         </Routes>
 
         {isInfoTooltipOpen && (
-          <Popup onClose={closeInfoTooltip}>{renderInfoTooltip()}</Popup>
+          <InfoTooltip
+            isOpen={isInfoTooltipOpen}
+            onClose={closeInfoTooltip}
+            title={infoTooltip.title}
+            message={infoTooltip.message}
+            isSuccess={infoTooltip.type === "success"}
+          />
         )}
 
         {isLoggedIn && <Footer />}

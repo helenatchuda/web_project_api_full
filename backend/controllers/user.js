@@ -65,6 +65,48 @@ export async function updateUser(req, res, next) {
   }
 }
 
+export async function updateCurrentUser(req, res, next) {
+  const userId = req.user._id;
+  const { name, about } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, about },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new UnauthorizedError();
+    }
+
+    return res.status(200).json(updatedUser);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function updateAvatar(req, res, next) {
+  const userId = req.user._id
+  const { avatar } = req.body
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { avatar },
+      { new: true }
+    )
+
+    if (!updatedUser) {
+      throw new UnauthorizedError()
+    }
+
+    return res.status(200).json(updatedUser)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 export async function getAuthenticatedUser(req, res, next) {
   const userId = req.user._id
 
