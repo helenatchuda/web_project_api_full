@@ -12,3 +12,5 @@ Criar um projeto full stack,
   React + Vite
 ![alt text](image-2.png)
 ![alt text](image-3.png)
+## link do projeto em produção
+https://web-project-api-full-chi.vercel.app/
