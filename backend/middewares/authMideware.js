@@ -3,6 +3,7 @@ import { UnauthorizedError } from "../erros/Unauthorize.js";
 
 export function authMiddleware(req, res, next) {
   const token = req.headers.authorization;
+  console.log("Token recebido no middleware:", token);
 
   if (!token || !token.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
