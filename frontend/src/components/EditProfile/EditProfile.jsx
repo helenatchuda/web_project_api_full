@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 export default function EditProfile({ onUpdateUser, onClose }) {
@@ -6,17 +6,9 @@ export default function EditProfile({ onUpdateUser, onClose }) {
   const currentUser = useContext(CurrentUserContext);
 
   // Estados locais para os campos do formulário
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(currentUser?.name || "");
+  const [description, setDescription] = useState(currentUser?.about || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Inicializar os campos com os valores do usuário atual
-  useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name || "");
-      setDescription(currentUser.about || "");
-    }
-  }, [currentUser]);
 
   // Handlers para mudanças nos inputs
   const handleNameChange = (e) => {

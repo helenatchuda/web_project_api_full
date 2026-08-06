@@ -1,4 +1,4 @@
-export default function Footer(propos) {
+export default function Footer() {
   return (
     <>
       <footer className="footer">

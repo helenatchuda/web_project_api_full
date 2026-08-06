@@ -4,14 +4,10 @@ export default function EditAvatar({onUpdateAvatar, onClose}) {
   const avatarInputRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [error, setError] = useState("");
-
   const handleInputChange = () => {
     const url = avatarInputRef.current.value.trim();
 
     if (!url) {
-   
-      setError("");
       return;
     }
   };
@@ -22,14 +18,12 @@ export default function EditAvatar({onUpdateAvatar, onClose}) {
     const avatarUrl = avatarInputRef.current.value.trim();
 
     if (!avatarUrl) {
-      setError("Por favor, insira uma URL");
       return;
     }
 
     try {
       new URL(avatarUrl);
-    } catch (err) {
-      setError("Por favor, insira uma URL válida");
+    } catch {
       return;
     }
 
@@ -42,9 +36,10 @@ export default function EditAvatar({onUpdateAvatar, onClose}) {
   };
 
   useEffect(() => {
+    const currentRef = avatarInputRef.current;
     return () => {
-      if (avatarInputRef.current) {
-        avatarInputRef.current.value = "";
+      if (currentRef) {
+        currentRef.value = "";
       }
     };
   }, []);

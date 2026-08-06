@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import Card from "../Card/Cards";
 import Profile from "../Profile";
 import Popup from "../Popup/Popup";
@@ -23,7 +23,6 @@ export default function Main({
   const currentUser = useContext(CurrentUserContext); // Obter usuário do contexto
 
   const [popup, setPopup] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
   
     
 

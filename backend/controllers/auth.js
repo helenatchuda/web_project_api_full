@@ -25,7 +25,9 @@ export async function register(req, res, next) {
       avatar: body.avatar,
     });
     console.log(userCreated);
-    res.status(201).json(userCreated);
+    const userResponse = userCreated.toObject();
+    delete userResponse.hashPassword;
+    res.status(201).json(userResponse);
   } catch (err) {
     next(err);
   }

@@ -1,4 +1,3 @@
-import card from "../../images/image2_card.png";
 import lixeira from "../../images/Trash_lixeira.png";
 import heart from "../../images/heart.png";
 import heartativa from "../../images/heartativa.png";
@@ -8,7 +7,7 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 
 export default function Card(props) {
   const currentUser = useContext(CurrentUserContext);
-  const { card, isOwn, onCardLike, onCardDelete, onCardClick } = props;
+  const { card, onCardLike, onCardDelete, onCardClick } = props;
   const { name, link } = props.card;
   const isLiked = card.likes.some(like => like === currentUser._id);
   

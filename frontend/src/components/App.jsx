@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom"; // Importações necessárias
 import Header from "./Header/Header";
 import Main from "./Main/Main";
@@ -15,14 +15,13 @@ function App() {
   const [cards, setCards] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const [accessToken, setAccessToken] = useState(null);
   const [infoTooltip, setInfoTooltip] = useState({ title: "", message: "" });
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 
   const navigate = useNavigate(); // Resolve o erro de 'navigate'
 
   // --- FUNÇÃO PARA CARREGAR DADOS (O que o instrutor pediu) ---
-  const loadAppData = async () => {
+  const loadAppData = useCallback(async () => {
     try {
       const [userData, cardsData] = await Promise.all([
         api.getUserInfo(),
@@ -30,18 +29,24 @@ function App() {
       ]);
       setCurrentUser(userData);
       setCards(cardsData);
-    } catch (error) {}
-  };
+      setIsLoggedIn(true);
+    } catch (err) {
+      console.error(err);
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   // Tenta recuperar sessão se houver um token (Opcional, mas recomendado)
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      api.setAccessToken(token);
-      setIsLoggedIn(true);
-      loadAppData();
-    }
-  }, []);
+    const initializeSession = async () => {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        api.setAccessToken(token);
+        await loadAppData();
+      }
+    };
+    initializeSession();
+  }, [loadAppData]);
 
   const closeInfoTooltip = () => {
     setIsInfoTooltipOpen(false);
@@ -58,9 +63,8 @@ function App() {
       const res = await api.login(data);
       api.setAccessToken(res.token);
       localStorage.setItem("jwt", res.token);
-      setAccessToken(res.token);
       setUserEmail(data.email);
-      setIsLoggedIn(true);
+      await loadAppData();
       navigate("/");
     } catch (err) {
       console.error("Erro ao fazer login:", err);

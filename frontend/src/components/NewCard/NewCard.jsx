@@ -1,12 +1,10 @@
 
-import React, {  useContext } from "react";
+import React from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 export default function NewCard({ onAddCard, onClose }) {
-
   const [cardName, setCardName] = React.useState('');
   const [cardLink, setCardLink] = React.useState('');
-   const currentUser = useContext(CurrentUserContext);
 
   function handleSubmit(e) {
     e.preventDefault();
